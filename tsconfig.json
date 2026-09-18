@@ -6,8 +6,8 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-    // Tests run under `node --experimental-strip-types`, which requires the
-    // .ts extension on relative imports.
+    // Tests and scripts/ run under `node --experimental-strip-types`, which
+    // requires the .ts extension on relative imports.
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "module": "esnext",

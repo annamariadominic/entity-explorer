@@ -1,0 +1,259 @@
+{
+  "elapsedMs": 116605,
+  "status": {
+    "run_id": "trun_73b8f7a0f9c14653bd4aff6d015879d3",
+    "interaction_id": "trun_73b8f7a0f9c14653bd4aff6d015879d3",
+    "status": "completed",
+    "is_active": false,
+    "warnings": [
+      {
+        "type": "spec_validation_warning",
+        "message": "All output schema properties must be required; missing properties have been added to 'required'. Use nullable types for unknown values.",
+        "detail": {
+          "path": "entities.items.required",
+          "documentation_url": "https://docs.parallel.ai/task-api/guides/specify-a-task",
+          "missing_fields": [
+            "canonical_url"
+          ]
+        }
+      },
+      {
+        "type": "spec_validation_warning",
+        "message": "This task may be too complex for base processor. Consider using https://platform.parallel.ai/play to optimize your task schema.",
+        "detail": {
+          "documentation_url": "https://docs.parallel.ai/task-api/guides/specify-a-task",
+          "recommended_max_properties": 5,
+          "total_properties": 7
+        }
+      }
+    ],
+    "processor": "base",
+    "metadata": {},
+    "created_at": "2026-09-18T17:09:24.280522Z",
+    "modified_at": "2026-09-18T17:11:18.567629Z"
+  },
+  "result": {
+    "run": {
+      "run_id": "trun_73b8f7a0f9c14653bd4aff6d015879d3",
+      "interaction_id": "trun_73b8f7a0f9c14653bd4aff6d015879d3",
+      "status": "completed",
+      "is_active": false,
+      "warnings": [
+        {
+          "type": "spec_validation_warning",
+          "message": "All output schema properties must be required; missing properties have been added to 'required'. Use nullable types for unknown values.",
+          "detail": {
+            "path": "entities.items.required",
+            "documentation_url": "https://docs.parallel.ai/task-api/guides/specify-a-task",
+            "missing_fields": [
+              "canonical_url"
+            ]
+          }
+        },
+        {
+          "type": "spec_validation_warning",
+          "message": "This task may be too complex for base processor. Consider using https://platform.parallel.ai/play to optimize your task schema.",
+          "detail": {
+            "documentation_url": "https://docs.parallel.ai/task-api/guides/specify-a-task",
+            "recommended_max_properties": 5,
+            "total_properties": 7
+          }
+        }
+      ],
+      "processor": "base",
+      "metadata": {},
+      "created_at": "2026-09-18T17:09:24.280522Z",
+      "modified_at": "2026-09-18T17:11:18.567629Z"
+    },
+    "output": {
+      "basis": [
+        {
+          "field": "entities",
+          "citations": [
+            {
+              "title": "Patrick Collison - Wikipedia",
+              "url": "https://en.wikipedia.org/wiki/Patrick_Collison",
+              "excerpts": [
+                "He is the chief executive officer of Stripe, which he co-founded with his younger brother, John, in 2010."
+              ]
+            },
+            {
+              "title": "Stripe, Inc.",
+              "url": "https://en.wikipedia.org/wiki/Stripe%2C_Inc.",
+              "excerpts": [
+                "Stripe, Inc. brothers John and Patrick Collison founded Stripe in Palo Alto, California, in 2010, and serve as the company's president and CEO, respectively."
+              ]
+            },
+            {
+              "title": "Stripe completes Metronome acquisition",
+              "url": "https://stripe.com/newsroom/news/stripe-completes-metronome-acquisition",
+              "excerpts": [
+                "SAN FRANCISCO AND DUBLIN—Stripe, the programmable financial services company, today announced that it has completed its acquisition of Metronome, the leader in orchestrating billing for the most complex usage-based models."
+              ]
+            },
+            {
+              "title": "Stripe completes Bridge acquisition",
+              "url": "https://stripe.com/newsroom/news/stripe-completes-bridge-acquisition",
+              "excerpts": [
+                "SAN FRANCISCO AND DUBLIN—Stripe, a financial infrastructure platform for businesses, today announced that it has completed its acquisition of Bridge."
+              ]
+            },
+            {
+              "title": "Stripe acquires OpenChannel",
+              "url": "https://stripe.com/newsroom/news/openchannel",
+              "excerpts": [
+                "SAN FRANCISCO—Stripe, a global technology company that builds economic infrastructure for the internet, today announced it has acquired OpenChannel, a leading provider of app marketplace software."
+              ]
+            },
+            {
+              "title": "Stripe: Economic infrastructure for the internet. | Y Combinator",
+              "url": "https://www.ycombinator.com/companies/stripe",
+              "excerpts": [
+                "Launched out of Y Combinator’s 2009 Summer batch, Stripe is a global technology company that builds economic infrastructure for the internet."
+              ]
+            }
+          ],
+          "reasoning": "The cited sources directly identify Stripe's two cofounders, document Stripe's acquisitions of Metronome, Bridge, and OpenChannel, and identify Stripe as having launched from Y Combinator's 2009 Summer batch.",
+          "confidence": "medium"
+        },
+        {
+          "field": "entities.0",
+          "citations": [
+            {
+              "title": "Patrick Collison - Wikipedia",
+              "url": "https://en.wikipedia.org/wiki/Patrick_Collison",
+              "excerpts": [
+                "He is the chief executive officer of Stripe, which he co-founded with his younger brother, John, in 2010."
+              ]
+            }
+          ],
+          "reasoning": "The source explicitly states that Patrick Collison co-founded Stripe with John Collison in 2010.",
+          "confidence": "medium"
+        },
+        {
+          "field": "entities.1",
+          "citations": [
+            {
+              "title": "Stripe, Inc.",
+              "url": "https://en.wikipedia.org/wiki/Stripe%2C_Inc.",
+              "excerpts": [
+                "Stripe, Inc. brothers John and Patrick Collison founded Stripe in Palo Alto, California, in 2010, and serve as the company's president and CEO, respectively."
+              ]
+            }
+          ],
+          "reasoning": "The source explicitly states that John and Patrick Collison founded Stripe and identifies John as the company's president.",
+          "confidence": "medium"
+        },
+        {
+          "field": "entities.2",
+          "citations": [
+            {
+              "title": "Stripe completes Metronome acquisition",
+              "url": "https://stripe.com/newsroom/news/stripe-completes-metronome-acquisition",
+              "excerpts": [
+                "SAN FRANCISCO AND DUBLIN—Stripe, the programmable financial services company, today announced that it has completed its acquisition of Metronome, the leader in orchestrating billing for the most complex usage-based models."
+              ]
+            }
+          ],
+          "reasoning": "Stripe's newsroom states that Stripe completed its acquisition of Metronome.",
+          "confidence": "high"
+        },
+        {
+          "field": "entities.3",
+          "citations": [
+            {
+              "title": "Stripe completes Bridge acquisition",
+              "url": "https://stripe.com/newsroom/news/stripe-completes-bridge-acquisition",
+              "excerpts": [
+                "SAN FRANCISCO AND DUBLIN—Stripe, a financial infrastructure platform for businesses, today announced that it has completed its acquisition of Bridge."
+              ]
+            }
+          ],
+          "reasoning": "Stripe's newsroom states that Stripe completed its acquisition of Bridge.",
+          "confidence": "high"
+        },
+        {
+          "field": "entities.4",
+          "citations": [
+            {
+              "title": "Stripe acquires OpenChannel",
+              "url": "https://stripe.com/newsroom/news/openchannel",
+              "excerpts": [
+                "SAN FRANCISCO—Stripe, a global technology company that builds economic infrastructure for the internet, today announced it has acquired OpenChannel, a leading provider of app marketplace software."
+              ]
+            }
+          ],
+          "reasoning": "Stripe's newsroom states that Stripe acquired OpenChannel.",
+          "confidence": "high"
+        },
+        {
+          "field": "entities.5",
+          "citations": [
+            {
+              "title": "Stripe: Economic infrastructure for the internet. | Y Combinator",
+              "url": "https://www.ycombinator.com/companies/stripe",
+              "excerpts": [
+                "Launched out of Y Combinator’s 2009 Summer batch, Stripe is a global technology company that builds economic infrastructure for the internet."
+              ]
+            }
+          ],
+          "reasoning": "Y Combinator's company profile states that Stripe launched out of Y Combinator's 2009 Summer batch, establishing the direct relationship.",
+          "confidence": "high"
+        }
+      ],
+      "type": "json",
+      "content": {
+        "entities": [
+          {
+            "canonical_url": "https://patrickcollison.com/about",
+            "excerpt": "He is the chief executive officer of Stripe, which he co-founded with his younger brother, John, in 2010.",
+            "type": "person",
+            "source_url": "https://en.wikipedia.org/wiki/Patrick_Collison",
+            "predicate": "founded_by",
+            "name": "Patrick Collison"
+          },
+          {
+            "canonical_url": "https://en.wikipedia.org/wiki/John_Collison",
+            "excerpt": "Stripe, Inc. brothers John and Patrick Collison founded Stripe in Palo Alto, California, in 2010, and serve as the company's president and CEO, respectively.",
+            "type": "person",
+            "source_url": "https://en.wikipedia.org/wiki/Stripe%2C_Inc.",
+            "predicate": "founded_by",
+            "name": "John Collison"
+          },
+          {
+            "canonical_url": "https://metronome.com",
+            "excerpt": "SAN FRANCISCO AND DUBLIN—Stripe, the programmable financial services company, today announced that it has completed its acquisition of Metronome, the leader in orchestrating billing for the most complex usage-based models.",
+            "type": "company",
+            "source_url": "https://stripe.com/newsroom/news/stripe-completes-metronome-acquisition",
+            "predicate": "acquired",
+            "name": "Metronome"
+          },
+          {
+            "canonical_url": "https://www.bridge.xyz",
+            "excerpt": "SAN FRANCISCO AND DUBLIN—Stripe, a financial infrastructure platform for businesses, today announced that it has completed its acquisition of Bridge.",
+            "type": "company",
+            "source_url": "https://stripe.com/newsroom/news/stripe-completes-bridge-acquisition",
+            "predicate": "acquired",
+            "name": "Bridge"
+          },
+          {
+            "canonical_url": "https://www.openchannel.io",
+            "excerpt": "SAN FRANCISCO—Stripe, a global technology company that builds economic infrastructure for the internet, today announced it has acquired OpenChannel, a leading provider of app marketplace software.",
+            "type": "company",
+            "source_url": "https://stripe.com/newsroom/news/openchannel",
+            "predicate": "acquired",
+            "name": "OpenChannel"
+          },
+          {
+            "canonical_url": "https://www.ycombinator.com",
+            "excerpt": "Launched out of Y Combinator’s 2009 Summer batch, Stripe is a global technology company that builds economic infrastructure for the internet.",
+            "type": "company",
+            "source_url": "https://www.ycombinator.com/companies/stripe",
+            "predicate": "related_to",
+            "name": "Y Combinator"
+          }
+        ]
+      }
+    }
+  }
+}
