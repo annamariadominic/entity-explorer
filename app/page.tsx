@@ -15,6 +15,15 @@ import {
 const POLL_MS = 2000;
 const HIGHLIGHT_MS = 2500;
 
+/**
+ * Creating an exploration waits on the upstream research call before it can
+ * answer with real ids, which takes a second or two. The seed is drawn from
+ * the typed name in the meantime so the request is visibly accepted rather
+ * than leaving an empty canvas that reads as a dropped click. The real seed
+ * replaces it as soon as the ids arrive.
+ */
+const PENDING_SEED_ID = "pending-seed";
+
 type PendingRun = { runId: string; entityId: string };
 
 export default function Home() {
@@ -106,6 +115,29 @@ export default function Home() {
     if (!seed.trim() || starting) return;
     setStarting(true);
     setBanner(null);
+    setErrors({});
+    setSelectedNode(null);
+    setSelectedEdge(null);
+    setEvidence(null);
+
+    // The placeholder's "loading" state is also what stops the click handler
+    // from trying to expand an id the server has never seen.
+    setNodeStates({ [PENDING_SEED_ID]: "loading" });
+    setGraph({
+      explorationId: "",
+      seedEntityId: PENDING_SEED_ID,
+      nodes: [
+        {
+          id: PENDING_SEED_ID,
+          name: seed.trim(),
+          type: seedType,
+          aliasCount: 0,
+          expanded: false,
+          isSeed: true,
+        },
+      ],
+      edges: [],
+    });
 
     try {
       const res = await fetch("/api/explorations", {
@@ -118,12 +150,12 @@ export default function Home() {
 
       pending.current = [{ runId: body.runId, entityId: body.seedEntityId }];
       setNodeStates({ [body.seedEntityId]: "loading" });
-      setErrors({});
-      setSelectedNode(null);
-      setSelectedEdge(null);
-      setEvidence(null);
       await refreshGraph(body.explorationId);
     } catch (err) {
+      // Drop the placeholder: leaving it would show a seed that is not being
+      // researched and cannot be clicked.
+      setGraph(null);
+      setNodeStates({});
       setBanner(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setStarting(false);
