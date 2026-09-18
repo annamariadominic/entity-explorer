@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --experimental-strip-types lib/__tests__/*.test.ts"
+    "test": "node --test --experimental-strip-types lib/__tests__/*.test.ts",
+    "test:db": "node --env-file-if-exists=.env.local --test --experimental-strip-types lib/__tests__/db/*.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

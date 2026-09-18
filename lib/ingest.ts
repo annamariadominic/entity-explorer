@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { normalizeName, normalizeUrl } from "./normalize";
-import { canonicalizeEdge, coercePredicate } from "./predicates";
-import { ENTITY_TYPES, type DiscoveredEntity, type EntityType, type ResolutionOutcome } from "./types";
+import { normalizeName, normalizeUrl } from "./normalize.ts";
+import { canonicalizeEdge, coercePredicate } from "./predicates.ts";
+import { ENTITY_TYPES, type DiscoveredEntity, type EntityType, type ResolutionOutcome } from "./types.ts";
 
 export type ResolutionReport = {
   name: string;
