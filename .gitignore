@@ -43,3 +43,6 @@ next-env.d.ts
 
 # stray python venv
 virtual/
+
+# Raw envelope dumped by scripts/verify-parallel-envelope.ts
+parallel-envelope.json
