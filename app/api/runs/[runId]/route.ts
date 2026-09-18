@@ -3,8 +3,14 @@ import { serverClient } from "@/lib/supabase";
 import { pollRun } from "@/lib/parallel";
 import { ingestRun } from "@/lib/ingest";
 
-/** Runs that outlive this are marked failed rather than polled forever. */
-const CEILING_MS = 3 * 60 * 1000;
+/**
+ * Runs that outlive this are marked failed rather than polled forever. A real
+ * run took 80s end to end (ADR-0001), and this is measured from the `runs`
+ * row rather than from the upstream run, so app-side latency counts against
+ * it. Five minutes keeps the headroom well clear of the observed time: killing
+ * a run that would have completed is worse than waiting.
+ */
+const CEILING_MS = 5 * 60 * 1000;
 
 export async function GET(
   _req: Request,

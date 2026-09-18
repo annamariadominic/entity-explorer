@@ -1,5 +1,5 @@
-import { ENTITY_TYPES, type DiscoveredEntity, type EntityType } from "./types";
-import { PREDICATES } from "./predicates";
+import { ENTITY_TYPES, type DiscoveredEntity, type EntityType } from "./types.ts";
+import { PREDICATES } from "./predicates.ts";
 
 const API = "https://api.parallel.ai/v1/tasks/runs";
 const PROCESSOR = "base";
@@ -121,6 +121,9 @@ export async function pollRun(runId: string): Promise<RunPoll> {
   }
   if (status !== "completed") return { state: "pending" };
 
+  // Verified against a real run (ADR-0001): the status response carries no
+  // `result` key at any point, so the second request is the only path, not a
+  // fallback. The `??` stays in case a future version inlines the result.
   const result = body.result ?? (await fetchResult(runId));
   return { state: "complete", entities: extractEntities(result) };
 }
@@ -139,6 +142,12 @@ async function fetchResult(runId: string): Promise<unknown> {
  * versions, so walk the plausible shapes rather than pinning one. Anything
  * unrecognised yields zero entities, which the app treats as an empty leaf
  * rather than an error.
+ *
+ * A real run (ADR-0001) puts the rows at `output.content.entities`, with
+ * `content` already parsed rather than a JSON string. `output.basis[].field`
+ * holds the *string* "entities", which the Array.isArray check skips. The walk
+ * is kept because one observed run does not make the shape stable, and it
+ * costs nothing once it matches.
  */
 function extractEntities(result: unknown): DiscoveredEntity[] {
   const seen = new Set<unknown>();
