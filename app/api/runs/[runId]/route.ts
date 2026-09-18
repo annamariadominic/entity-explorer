@@ -34,7 +34,7 @@ export async function GET(
     }
 
     if (Date.now() - new Date(run.created_at).getTime() > CEILING_MS) {
-      return fail(db, run.id, "Research timed out after 3 minutes.");
+      return fail(db, run.id, `Research timed out after ${CEILING_MS / 60000} minutes.`);
     }
 
     const poll = await pollRun(run.parallel_run_id!);
@@ -47,7 +47,7 @@ export async function GET(
 
     const { data: subject } = await db
       .from("entities")
-      .select("id, type")
+      .select("id, type, canonical_url")
       .eq("id", run.entity_id)
       .single();
     if (!subject) return fail(db, run.id, "Subject entity disappeared.");
@@ -57,6 +57,7 @@ export async function GET(
       run.exploration_id,
       subject.id,
       subject.type,
+      subject.canonical_url,
       run.id,
       poll.entities,
     );

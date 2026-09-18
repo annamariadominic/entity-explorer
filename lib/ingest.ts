@@ -39,10 +39,12 @@ export async function ingestRun(
   explorationId: string,
   subjectId: string,
   subjectType: EntityType,
+  subjectUrl: string | null,
   runId: string,
   discovered: DiscoveredEntity[],
 ): Promise<ResolutionReport[]> {
   const reports: ResolutionReport[] = [];
+  const subjectKey = normalizeUrl(subjectUrl);
 
   for (const raw of discovered) {
     const type: EntityType = ENTITY_TYPES.includes(raw.type) ? raw.type : "company";
@@ -54,7 +56,7 @@ export async function ingestRun(
       explorationId,
       raw.name,
       type,
-      raw.canonical_url ?? null,
+      neighbourUrl(raw.canonical_url ?? null, subjectKey),
     );
 
     // The subject frequently appears in its own results under a variant name.
@@ -85,4 +87,23 @@ export async function ingestRun(
   }
 
   return reports;
+}
+
+/**
+ * The schema asks for each neighbour's own homepage, and the model answers
+ * with the subject's when it does not know one. Taken at face value that
+ * points the strongest identity signal at the subject, and every such
+ * neighbour resolves onto it: expanding Apple Inc. filed Ronald Wayne, Beats
+ * Music, Apple Intelligence and Gemini as aliases of Apple, losing four
+ * entities and four edges and inflating Apple's alias count to five names.
+ *
+ * A URL equal to the subject's says nothing about a neighbour, so it is
+ * dropped and the row falls through to name matching. The cost is that the
+ * subject re-appearing in its own results under a name that does not
+ * normalize to the same key now creates a second entity instead of resolving
+ * onto itself — a missed dedup, which is the side of this trade to be on.
+ */
+function neighbourUrl(raw: string | null, subjectKey: string | null): string | null {
+  const url = normalizeUrl(raw);
+  return url && url === subjectKey ? null : url;
 }

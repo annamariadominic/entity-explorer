@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   try {
     const db = serverClient();
 
-    const [exploration, entities, relationships, aliases, evidence] = await Promise.all([
+    const [exploration, entities, relationships, aliases] = await Promise.all([
       db.from("explorations").select("seed_entity_id").eq("id", explorationId).single(),
       db
         .from("entities")
@@ -22,13 +22,24 @@ export async function GET(req: Request) {
         .select("id, source_id, target_id, predicate")
         .eq("exploration_id", explorationId),
       db.from("entity_aliases").select("entity_id").eq("exploration_id", explorationId),
-      db.from("relationship_evidence").select("relationship_id"),
     ]);
 
     const aliasCounts = new Map<string, number>();
     for (const row of aliases.data ?? []) {
       aliasCounts.set(row.entity_id, (aliasCounts.get(row.entity_id) ?? 0) + 1);
     }
+
+    // Evidence rows carry no exploration id, so they have to be fetched by
+    // relationship: selecting them unfiltered reads every exploration's rows
+    // and is silently truncated at PostgREST's default row limit, which shows
+    // up as edges rendered thin with an evidence count of zero.
+    const relationshipIds = (relationships.data ?? []).map((r) => r.id);
+    const evidence = relationshipIds.length
+      ? await db
+          .from("relationship_evidence")
+          .select("relationship_id")
+          .in("relationship_id", relationshipIds)
+      : { data: [] as { relationship_id: string }[] };
 
     const evidenceCounts = new Map<string, number>();
     for (const row of evidence.data ?? []) {
