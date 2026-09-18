@@ -40,6 +40,7 @@ export default function Home() {
   const [starting, setStarting] = useState(false);
 
   const pending = useRef<PendingRun[]>([]);
+  const polling = useRef(false);
   const explorationId = graph?.explorationId ?? null;
 
   const refreshGraph = useCallback(async (id: string) => {
@@ -60,51 +61,68 @@ export default function Home() {
   }, []);
 
   // One interval drives every in-flight run, so several expansions can be
-  // outstanding at once and resolve out of order.
+  // outstanding at once and resolve out of order. Each tick polls them all
+  // together rather than one after another, so a run that finishes second is
+  // not held up behind the ingest of the one that finished first.
   useEffect(() => {
     if (!explorationId) return;
     const timer = setInterval(async () => {
-      if (!pending.current.length) return;
+      // Ticks must not overlap. Polling is what triggers ingest server-side,
+      // and ingest takes longer than the interval, so a second poll of the
+      // same run finds its row still pending and ingests the same results a
+      // second time — concurrently with the first.
+      if (polling.current || !pending.current.length) return;
+      polling.current = true;
 
-      const settled: string[] = [];
-      let changed = false;
+      try {
+        const runs = [...pending.current];
+        const bodies = await Promise.all(
+          runs.map(async (run) => {
+            const res = await fetch(`/api/runs/${run.runId}`);
+            return res.ok ? await res.json() : null;
+          }),
+        );
 
-      for (const run of [...pending.current]) {
-        const res = await fetch(`/api/runs/${run.runId}`);
-        if (!res.ok) continue;
-        const body = await res.json();
-        if (body.status === "pending") continue;
+        const settled: string[] = [];
+        let changed = false;
 
-        settled.push(run.runId);
-        changed = true;
+        for (const [i, run] of runs.entries()) {
+          const body = bodies[i];
+          if (!body || body.status === "pending") continue;
 
-        if (body.status === "failed") {
-          setNodeStates((s) => ({ ...s, [run.entityId]: "failed" }));
-          setErrors((e) => ({ ...e, [run.entityId]: body.error ?? "Research failed." }));
-          continue;
+          settled.push(run.runId);
+          changed = true;
+
+          if (body.status === "failed") {
+            setNodeStates((s) => ({ ...s, [run.entityId]: "failed" }));
+            setErrors((e) => ({ ...e, [run.entityId]: body.error ?? "Research failed." }));
+            continue;
+          }
+
+          setNodeStates((s) => ({
+            ...s,
+            [run.entityId]: body.empty ? "empty" : "complete",
+          }));
+
+          const created = (body.resolutions ?? [])
+            .filter((r: { outcome: string }) => r.outcome === "created")
+            .map((r: { entityId: string }) => r.entityId);
+          flash(created);
+
+          const merged = (body.resolutions ?? []).filter(
+            (r: { outcome: string }) => r.outcome !== "created",
+          ).length;
+          if (merged > 0) {
+            setBanner(`${merged} discovered ${merged === 1 ? "entity" : "entities"} resolved to existing nodes`);
+            setTimeout(() => setBanner(null), 4000);
+          }
         }
 
-        setNodeStates((s) => ({
-          ...s,
-          [run.entityId]: body.empty ? "empty" : "complete",
-        }));
-
-        const created = (body.resolutions ?? [])
-          .filter((r: { outcome: string }) => r.outcome === "created")
-          .map((r: { entityId: string }) => r.entityId);
-        flash(created);
-
-        const merged = (body.resolutions ?? []).filter(
-          (r: { outcome: string }) => r.outcome !== "created",
-        ).length;
-        if (merged > 0) {
-          setBanner(`${merged} discovered ${merged === 1 ? "entity" : "entities"} resolved to existing nodes`);
-          setTimeout(() => setBanner(null), 4000);
-        }
+        pending.current = pending.current.filter((r) => !settled.includes(r.runId));
+        if (changed) await refreshGraph(explorationId);
+      } finally {
+        polling.current = false;
       }
-
-      pending.current = pending.current.filter((r) => !settled.includes(r.runId));
-      if (changed) await refreshGraph(explorationId);
     }, POLL_MS);
 
     return () => clearInterval(timer);
@@ -181,6 +199,16 @@ export default function Home() {
       setErrors((e) => ({ ...e, [entityId]: body.error ?? "Could not start research." }));
       return;
     }
+
+    // The server refused because this entity has already been researched, so
+    // the graph this click was made against was out of date. Re-read it rather
+    // than leaving the node showing research that is not happening.
+    if (body.alreadyExpanded) {
+      setNodeStates((s) => ({ ...s, [entityId]: "complete" }));
+      if (explorationId) await refreshGraph(explorationId);
+      return;
+    }
+
     pending.current = [...pending.current, { runId: body.runId, entityId }];
   }
 
@@ -188,8 +216,13 @@ export default function Home() {
     setSelectedNode(node);
     setSelectedEdge(null);
     setEvidence(null);
-    // Already-expanded nodes select rather than re-research.
-    if (!node.expanded && nodeStates[node.id] !== "loading") expand(node.id);
+    // An expanded node selects; an unexpanded one researches. `expanded` comes
+    // from the last graph payload, so this is a fast path rather than the
+    // decision — /api/expand refuses a second expansion on its own.
+    const state = nodeStates[node.id];
+    if (!node.expanded && state !== "loading" && state !== "complete" && state !== "empty") {
+      expand(node.id);
+    }
   }
 
   async function onEdgeClick(edge: GraphEdge) {

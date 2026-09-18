@@ -87,11 +87,20 @@ export default function GraphCanvas(props: Props) {
             ctx.lineWidth = 2;
             ctx.strokeStyle = "#111827";
             ctx.stroke();
-          } else if (!node.expanded && state === "idle") {
-            // Unexpanded nodes read as "there is more here".
+          }
+
+          // Unexpanded nodes read as "there is more here". The ring sits
+          // outside the node rather than on its edge so that selecting a node
+          // cannot disguise whether it has been researched — the one state
+          // where the two used to look identical.
+          if (!node.expanded && state !== "loading") {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, radius + 3, 0, 2 * Math.PI);
+            ctx.setLineDash([2, 2]);
             ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#ffffff";
+            ctx.strokeStyle = "#6b7280";
             ctx.stroke();
+            ctx.setLineDash([]);
           }
 
           if (state === "loading") {

@@ -30,6 +30,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ runId: active[0].id, reused: true });
     }
 
+    // Expansion happens once per entity: an already-expanded node is selected,
+    // not researched again. The client keeps its own copy of this flag, but
+    // that copy is a cache of the last graph payload and goes stale the moment
+    // a run completes, so the refusal has to live here, where the flag is.
+    if (entity.expanded_at) {
+      return NextResponse.json({ alreadyExpanded: true });
+    }
+
     const parallelRunId = await createRun(
       entity.canonical_name,
       entity.type,
