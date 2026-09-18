@@ -104,6 +104,11 @@ begin
 end;
 $$;
 
+-- SUPERSEDED by 0003: the body below cannot execute. Its `relationship_id`
+-- OUT column shadows the evidence table's column in the ON CONFLICT target,
+-- and Postgres rejects the statement. 0003 replaces this function; edit it
+-- there, not here.
+--
 -- Relationship upsert with evidence accumulation. Direction is already
 -- canonicalized by the caller, so the inverse of an existing edge lands here
 -- as the same (source, target, predicate) triple and appends evidence instead
